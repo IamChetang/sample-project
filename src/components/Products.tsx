@@ -4,6 +4,32 @@ import "./product.css";
 import { useState } from "react";
 import React from "react";
 import Modal from "./Modal";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+
+import MenuItem from "@mui/material/MenuItem";
+
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
+  FormControl,
+  Grid,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from "@mui/material";
+import ProductCard from "./ProductCard";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 const Products = () => {
   const [text, setText] = useState<string>("");
   const [category, setCategory] = useState<string>("All");
@@ -21,12 +47,16 @@ const Products = () => {
         res.json()
       ),
   });
-  const openModal = (product: any) => {
+  const openModal = () => {
+    if (cartProduct.length !== 0) {
+      setIsModalOpen(true);
+    }
+  };
+  function addToCart(product: ProductType) {
     const existingProduct = cartProduct.find(
       (products) => products.id === product.id
     );
     product.quantity = 1;
-    setIsModalOpen(true);
     if (existingProduct) {
       setCartProduct(
         cartProduct.map((products) =>
@@ -41,59 +71,193 @@ const Products = () => {
     } else {
       setCartProduct([...cartProduct, product]);
     }
-  };
+  }
 
   const closeModal = () => {
     setCartProduct([]);
     setIsModalOpen(false);
   };
   function deleteProductFromCart(id: number) {
-    setCartProduct((prevCartProducts) =>
-      prevCartProducts.filter((product) => product.id !== id)
-    );
+    if (cartProduct.length === 1) {
+      setIsModalOpen(false);
+      setCartProduct((prevCartProducts) =>
+        prevCartProducts.filter((product) => product.id !== id)
+      );
+    } else {
+      setCartProduct((prevCartProducts) =>
+        prevCartProducts.filter((product) => product.id !== id)
+      );
+    }
   }
   function changeInput(e: React.ChangeEvent<HTMLInputElement>) {
     setText(e.target.value);
   }
-  function changeSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    setCategory(e.target.value);
-  }
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setCategory(event.target.value);
+  };
+
   return (
     <>
-      <section style={{ width: "100vw", height: "100vh" }}>
-        <div
-          style={{
-            padding: "1rem",
-            border: "1px solid black",
-          }}
-        >
-          header
-        </div>
-        {isPending ? (
-          <span> loading ...</span>
-        ) : error ? (
-          <span>error + {error.message}</span>
-        ) : data.length === 0 ? (
-          <span>No data found</span>
-        ) : (
-          <div className="main_container">
-            <div className="filter_container">
-              <input
-                type="text"
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="fixed">
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                size="small"
+                label="Search by title"
                 value={text}
                 onChange={(e) => changeInput(e)}
+                sx={{
+                  backgroundColor: "#f0f0f0",
+                  "&:hover": {
+                    backgroundColor: "#e0e0e0",
+                  },
+                  ".MuiSelect-select": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
               />
-              <select name="" id="" onChange={(e) => changeSelect(e)}>
-                <option value="All">All</option>
-                {categoryData?.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+
+              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={category}
+                  label="Age"
+                  onChange={handleChange}
+                  sx={{
+                    backgroundColor: "#f0f0f0",
+                    "&:hover": {
+                      backgroundColor: "#e0e0e0",
+                    },
+                    ".MuiSelect-select": {
+                      backgroundColor: "#f0f0f0",
+                    },
+                  }}
+                >
+                  <MenuItem value="All">
+                    <em>All</em>
+                  </MenuItem>
+
+                  {categoryData?.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
 
-            <div className="card_container">
+            <div>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
+                onClick={() => openModal()}
+              >
+                <Badge badgeContent={cartProduct.length} color="error">
+                  <ShoppingCartIcon sx={{ cursor: "pointer" }} />
+                </Badge>
+              </IconButton>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+            </div>
+          </Toolbar>
+        </AppBar>
+      </Box>
+      <section style={{ width: "100vw", height: "100vh", marginTop: "6rem" }}>
+        {isPending ? (
+          <Container
+            maxWidth="lg"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "2rem",
+              paddingBottom: "2rem",
+            }}
+          >
+            <span> loading ...</span>
+          </Container>
+        ) : error ? (
+          <Container
+            maxWidth="lg"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "2rem",
+              paddingBottom: "2rem",
+            }}
+          >
+            <span>error + {error.message}</span>
+          </Container>
+        ) : data.filter((product) => {
+            if (category === "All") {
+              return (
+                true && product.title.toLowerCase().includes(text.toLowerCase())
+              );
+            } else {
+              return (
+                product.category === category &&
+                product.title.toLowerCase().includes(text.toLowerCase())
+              );
+            }
+          }).length === 0 ? (
+          <Container
+            maxWidth="lg"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "2rem",
+              paddingBottom: "2rem",
+            }}
+          >
+            <span>No data found</span>
+          </Container>
+        ) : (
+          <Container
+            maxWidth="lg"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "2rem",
+              paddingBottom: "2rem",
+            }}
+          >
+            <Grid spacing={2} container>
               {data
                 .filter((product) => {
                   if (category === "All") {
@@ -108,48 +272,69 @@ const Products = () => {
                     );
                   }
                 })
-
                 .map((product) => (
-                  <div key={product.id} className="card">
-                    <img src={product.image} alt={product.title} />
-                    <div className="content_container">
-                      <h5>{product.title}</h5>
-                      <p>{product.title}</p>
-                      <span>{product.category}</span>
-
-                      <div className="pricing_container">
-                        <span>{product.price}</span>
-                        <span>
-                          {product.rating.rate}({product.rating.count})
-                        </span>
-                      </div>
-                      <button onClick={() => openModal(product)}>
-                        Open Modal
-                      </button>
-                    </div>
-                  </div>
+                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <ProductCard product={product} addToCart={addToCart} />
+                  </Grid>
                 ))}
-            </div>
-          </div>
+            </Grid>
+          </Container>
         )}
       </section>
-
       <Modal show={isModalOpen} onClose={closeModal}>
-        <h2>Modal Header</h2>
-        <div className="productcontainer">
-          {cartProduct.map((product) => (
-            <div className="product">
-              <p>
-                {product.title} <br />
-                {product.price} (Quant:{product.quantity})
-              </p>
+        <h2
+          style={{
+            marginBottom: "1rem",
+          }}
+        >
+          Shopping cart
+        </h2>
 
-              <button onClick={() => deleteProductFromCart(product.id)}>
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
+        {cartProduct.map((product) => (
+          <Card
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              height: "auto",
+            }}
+          >
+            <CardMedia
+              component="img"
+              sx={{
+                width: 100,
+                height: 100,
+                objectFit: "contain",
+                aspectRatio: "3/4",
+              }}
+              image={product.image}
+              alt={product.title}
+            />
+
+            <CardContent sx={{ textAlign: "center" }}>
+              <Typography variant="h6" sx={{ fontSize: "0.875rem" }}>
+                {product.title.substring(0, 30)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ₹{product.price.toFixed(2)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Quantity : {product.quantity}
+              </Typography>
+
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                <IconButton
+                  size="small"
+                  aria-label="delete"
+                  onClick={() => deleteProductFromCart(product.id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
       </Modal>
     </>
   );
