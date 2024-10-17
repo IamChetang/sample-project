@@ -133,6 +133,7 @@ const Products = () => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              overflow: "hidden",
             }}
           >
             <div
@@ -142,45 +143,39 @@ const Products = () => {
                 alignItems: "center",
               }}
             >
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
-              >
-                <MenuIcon />
-              </IconButton>
-
               <TextField
                 id="outlined-basic"
                 variant="outlined"
                 size="small"
-                label="Search by title"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 sx={{
                   backgroundColor: "#f0f0f0",
                   "&:hover": {
                     backgroundColor: "#e0e0e0",
+                    ".MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
                   },
-                  ".MuiSelect-select": {
-                    backgroundColor: "#f0f0f0",
+                  ".MuiOutlinedInput-notchedOutline": {
+                    border: "none",
                   },
                 }}
               />
 
               <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                 <Select
-                  labelId="demo-select-small-label"
                   id="demo-select-small"
                   value={category}
-                  label="Age"
                   onChange={(e) => setCategory(e.target.value)}
                   sx={{
                     backgroundColor: "#f0f0f0",
                     "&:hover": {
                       backgroundColor: "#e0e0e0",
+                      border: "none",
+                    },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      border: "none",
                     },
                     ".MuiSelect-select": {
                       backgroundColor: "#f0f0f0",
@@ -208,25 +203,30 @@ const Products = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={() => openModal()}
+                sx={{
+                  "&:focus": {
+                    outline: "none",
+                  },
+                }}
               >
                 <Badge badgeContent={cartProduct.length} color="error">
                   <ShoppingCartIcon sx={{ cursor: "pointer" }} />
                 </Badge>
               </IconButton>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
             </div>
           </Toolbar>
         </AppBar>
       </Box>
-      <section style={{ width: "100vw", height: "100vh", marginTop: "6rem" }}>
+      <section
+        style={{
+          height: "auto",
+
+          overflowX: "hidden",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {isPending ? (
           <Container
             maxWidth="lg"
@@ -278,9 +278,7 @@ const Products = () => {
           <Container
             maxWidth="lg"
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "2rem",
+              marginTop: "6rem",
               paddingBottom: "2rem",
             }}
           >
@@ -304,9 +302,9 @@ const Products = () => {
                     <ProductCard
                       product={product}
                       addToCart={addToCart}
-                      deleteProductFromCart={deleteProductFromCart}
                       handleDecrease={handleDecrease}
                       handleIncrease={handleIncrease}
+                      cartProduct={cartProduct}
                     />
                   </Grid>
                 ))}
@@ -357,7 +355,11 @@ const Products = () => {
                 <IconButton
                   onClick={() => handleDecrease(product.id)}
                   size="small"
-                  disabled={product.quantity === 1}
+                  sx={{
+                    "&:focus": {
+                      outline: "none",
+                    },
+                  }}
                 >
                   <RemoveIcon />
                 </IconButton>
@@ -367,10 +369,20 @@ const Products = () => {
                 <IconButton
                   onClick={() => handleIncrease(product.id)}
                   size="small"
+                  sx={{
+                    "&:focus": {
+                      outline: "none",
+                    },
+                  }}
                 >
                   <AddIcon />
                 </IconButton>
                 <IconButton
+                  sx={{
+                    "&:focus": {
+                      outline: "none",
+                    },
+                  }}
                   size="small"
                   aria-label="delete"
                   onClick={() => deleteProductFromCart(product.id)}

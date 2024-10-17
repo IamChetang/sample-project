@@ -16,16 +16,20 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 const ProductCard = ({
   product,
   addToCart,
-  deleteProductFromCart,
+  cartProduct,
   handleDecrease,
   handleIncrease,
 }: {
   product: ProductType;
   addToCart: (product: ProductType) => void;
-  deleteProductFromCart: (id: number) => void;
+  cartProduct: ProductType[];
   handleDecrease: (id: number) => void;
   handleIncrease: (id: number) => void;
 }) => {
+  const foundProduct = cartProduct.find(
+    (products) => products.id === product.id
+  );
+  const quantity = foundProduct ? foundProduct.quantity : 0;
   return (
     <Card sx={{ maxWidth: 345, height: "auto" }}>
       <CardMedia
@@ -78,34 +82,46 @@ const ProductCard = ({
         >
           ₹{product.price.toFixed(2)}
         </Typography>
-        {product.quantity ? (
+        {quantity ? (
           <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
             <IconButton
               onClick={() => handleDecrease(product.id)}
               size="small"
-              disabled={product.quantity === 1}
+              sx={{
+                "&:focus": {
+                  outline: "none",
+                },
+              }}
             >
               <RemoveIcon />
             </IconButton>
             <Typography variant="body1" sx={{ padding: "0 12px" }}>
-              {product.quantity}
+              {quantity}
             </Typography>
-            <IconButton onClick={() => handleIncrease(product.id)} size="small">
+            <IconButton
+              sx={{
+                "&:focus": {
+                  outline: "none",
+                },
+              }}
+              onClick={() => handleIncrease(product.id)}
+              size="small"
+            >
               <AddIcon />
             </IconButton>
-            {/* <Button
-              variant="outlined"
-              color="secondary"
-              sx={{ ml: 2 }}
-              onClick={() => deleteProductFromCart(product.id)}
-            >
-              Remove
-            </Button> */}
           </Box>
         ) : (
           <Button
             variant="outlined"
-            startIcon={<AddShoppingCartIcon />}
+            startIcon={
+              <AddShoppingCartIcon
+                sx={{
+                  "&:focus": {
+                    outline: "none",
+                  },
+                }}
+              />
+            }
             onClick={() => addToCart(product)}
             size="small"
           >
