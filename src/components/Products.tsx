@@ -11,7 +11,8 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
 
 import {
@@ -35,6 +36,7 @@ const Products = () => {
   const [category, setCategory] = useState<string>("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cartProduct, setCartProduct] = useState<ProductType[]>([]);
+
   const { isPending, error, data } = useQuery({
     queryKey: ["products"],
     queryFn: (): Promise<ProductType[]> =>
@@ -72,6 +74,38 @@ const Products = () => {
       setCartProduct([...cartProduct, product]);
     }
   }
+  const handleIncrease = (id: number) => {
+    setCartProduct(
+      cartProduct.map((products) =>
+        products.id === id
+          ? {
+              ...products,
+              quantity: Number(products.quantity) + 1,
+            }
+          : products
+      )
+    );
+  };
+
+  const handleDecrease = (id: number) => {
+    const existingProduct = cartProduct.find((products) => products.id == id);
+    if (existingProduct) {
+      if (existingProduct.quantity > 1) {
+        setCartProduct(
+          cartProduct.map((products) =>
+            products.id === id
+              ? {
+                  ...products,
+                  quantity: Number(products.quantity) - 1,
+                }
+              : products
+          )
+        );
+      } else {
+        deleteProductFromCart(id);
+      }
+    }
+  };
 
   const closeModal = () => {
     setCartProduct([]);
@@ -89,13 +123,6 @@ const Products = () => {
       );
     }
   }
-  function changeInput(e: React.ChangeEvent<HTMLInputElement>) {
-    setText(e.target.value);
-  }
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setCategory(event.target.value);
-  };
 
   return (
     <>
@@ -131,7 +158,7 @@ const Products = () => {
                 size="small"
                 label="Search by title"
                 value={text}
-                onChange={(e) => changeInput(e)}
+                onChange={(e) => setText(e.target.value)}
                 sx={{
                   backgroundColor: "#f0f0f0",
                   "&:hover": {
@@ -149,7 +176,7 @@ const Products = () => {
                   id="demo-select-small"
                   value={category}
                   label="Age"
-                  onChange={handleChange}
+                  onChange={(e) => setCategory(e.target.value)}
                   sx={{
                     backgroundColor: "#f0f0f0",
                     "&:hover": {
@@ -274,7 +301,13 @@ const Products = () => {
                 })
                 .map((product) => (
                   <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <ProductCard product={product} addToCart={addToCart} />
+                    <ProductCard
+                      product={product}
+                      addToCart={addToCart}
+                      deleteProductFromCart={deleteProductFromCart}
+                      handleDecrease={handleDecrease}
+                      handleIncrease={handleIncrease}
+                    />
                   </Grid>
                 ))}
             </Grid>
@@ -319,11 +352,24 @@ const Products = () => {
               <Typography variant="body2" color="text.secondary">
                 ₹{product.price.toFixed(2)}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Quantity : {product.quantity}
-              </Typography>
 
               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                <IconButton
+                  onClick={() => handleDecrease(product.id)}
+                  size="small"
+                  disabled={product.quantity === 1}
+                >
+                  <RemoveIcon />
+                </IconButton>
+                <Typography variant="body1" sx={{ padding: "0 12px" }}>
+                  {product.quantity}
+                </Typography>
+                <IconButton
+                  onClick={() => handleIncrease(product.id)}
+                  size="small"
+                >
+                  <AddIcon />
+                </IconButton>
                 <IconButton
                   size="small"
                   aria-label="delete"

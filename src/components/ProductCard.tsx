@@ -7,15 +7,24 @@ import {
   Button,
   Box,
   Rating,
+  IconButton,
 } from "@mui/material";
 import { ProductType } from "../type";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 const ProductCard = ({
   product,
   addToCart,
+  deleteProductFromCart,
+  handleDecrease,
+  handleIncrease,
 }: {
   product: ProductType;
   addToCart: (product: ProductType) => void;
+  deleteProductFromCart: (id: number) => void;
+  handleDecrease: (id: number) => void;
+  handleIncrease: (id: number) => void;
 }) => {
   return (
     <Card sx={{ maxWidth: 345, height: "auto" }}>
@@ -69,20 +78,40 @@ const ProductCard = ({
         >
           ₹{product.price.toFixed(2)}
         </Typography>
-        {/* <Button size="small" onClick={() => addToCart(product)}>
-          <IconButton aria-label="share">
-            <AddShoppingCartIcon sx={{ cursor: "pointer" }} />
-          </IconButton>
-        </Button> */}
-
-        <Button
-          variant="outlined"
-          startIcon={<AddShoppingCartIcon />}
-          onClick={() => addToCart(product)}
-          size="small"
-        >
-          Add to cart
-        </Button>
+        {product.quantity ? (
+          <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+            <IconButton
+              onClick={() => handleDecrease(product.id)}
+              size="small"
+              disabled={product.quantity === 1}
+            >
+              <RemoveIcon />
+            </IconButton>
+            <Typography variant="body1" sx={{ padding: "0 12px" }}>
+              {product.quantity}
+            </Typography>
+            <IconButton onClick={() => handleIncrease(product.id)} size="small">
+              <AddIcon />
+            </IconButton>
+            {/* <Button
+              variant="outlined"
+              color="secondary"
+              sx={{ ml: 2 }}
+              onClick={() => deleteProductFromCart(product.id)}
+            >
+              Remove
+            </Button> */}
+          </Box>
+        ) : (
+          <Button
+            variant="outlined"
+            startIcon={<AddShoppingCartIcon />}
+            onClick={() => addToCart(product)}
+            size="small"
+          >
+            Add to cart
+          </Button>
+        )}
       </CardActions>
     </Card>
   );
