@@ -219,8 +219,8 @@ const Products = () => {
       </Box>
       <section
         style={{
+          width: "100vw",
           height: "auto",
-
           overflowX: "hidden",
           display: "flex",
           justifyContent: "center",
@@ -233,7 +233,7 @@ const Products = () => {
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              marginTop: "2rem",
+              marginTop: "6rem",
               paddingBottom: "2rem",
             }}
           >
@@ -245,7 +245,7 @@ const Products = () => {
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              marginTop: "2rem",
+              marginTop: "6rem",
               paddingBottom: "2rem",
             }}
           >
@@ -268,7 +268,7 @@ const Products = () => {
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              marginTop: "2rem",
+              marginTop: "6rem",
               paddingBottom: "2rem",
             }}
           >
@@ -278,6 +278,7 @@ const Products = () => {
           <Container
             maxWidth="lg"
             sx={{
+              display: "flex",
               marginTop: "6rem",
               paddingBottom: "2rem",
             }}
